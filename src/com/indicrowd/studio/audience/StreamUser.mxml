@@ -7,11 +7,12 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.core.FlexGlobals;
+			import mx.controls.Alert;
 			import org.osmf.events.MediaPlayerStateChangeEvent;
 			import org.osmf.media.*;
 			
 			[Bindable]
-			private var clientStreamStr:String;
+			private var clientStreamStr:String = "-1";
 			[Bindable]
 			private var clientDefaultImage:String;
 			
@@ -32,9 +33,10 @@
 				this.videoEventsDisabled = true;
 				var videoSource:DynamicStreamingVideoSource = this.userVideo.source as DynamicStreamingVideoSource;
 				
-				this.userVideo.source = clientDefaultImage;
+				this.userVideo.stop();
+				this.userDefaultImage.visible = true;
 				
-				setTimeout(resetVideoSource, 1000, videoSource);
+				setTimeout(resetVideoSource, 5000, videoSource);
 			}
 			
 			private function resetVideoSource(videoSource:DynamicStreamingVideoSource):void
@@ -50,12 +52,19 @@
 				clientStreamStr = FlexGlobals.topLevelApplication.parameters.clientStreamStr;
 				clientDefaultImage = FlexGlobals.topLevelApplication.parameters.clientDefaultImage;
 				
+				userDefaultImage.source = clientDefaultImage;
+				
 				flash.external.ExternalInterface.addCallback("setClientStreamStr", setClientStreamStr);
 				flash.external.ExternalInterface.addCallback("setClientDefaultImage", setClientDefaultImage);
 			}
 			
 			protected function userVideo_mediaPlayerStateChangeHandler(event:MediaPlayerStateChangeEvent):void
-			{
+			{	
+				if (event.state == MediaPlayerState.PLAYING)
+				{
+					this.userDefaultImage.visible = false;
+				}
+				
 				if (this.videoEventsDisabled)
 					return ;
 				
@@ -67,10 +76,11 @@
 				}
 			}
 			
+			
 		]]>
 	</fx:Script>
 	<fx:Declarations>
-		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!-- Place non-visual elements (e.g., services, value objects) here -->	
 	</fx:Declarations>
 	<s:VideoDisplay id="userVideo" x="0" y="0" width="100" height="100" mediaPlayerStateChange="userVideo_mediaPlayerStateChangeHandler(event)">
 		<s:source>
@@ -80,4 +90,5 @@
 			</s:DynamicStreamingVideoSource>
 		</s:source>	
 	</s:VideoDisplay>
+	<s:Image id="userDefaultImage" x="0" y="0" width="100" height="100"/>
 </mx:Application>
