@@ -6,11 +6,18 @@
 				initialize="init()" layout="absolute">
 	<fx:Script>
 		<![CDATA[
-			import mx.core.FlexGlobals;
+			import mx.rpc.events.ResultEvent;
 			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			
 			import org.osmf.events.MediaPlayerStateChangeEvent;
 			import org.osmf.media.*;
 			
+			[Bindable]
+			private var serverInfoURL:String = "/server/optimal";
+			private var urlPrefix:String = "/IndiCrowd";
+			[Bindable]
+			private var clientStreamURL:String;
 			[Bindable]
 			private var clientStreamStr:String = "-1";
 			[Bindable]
@@ -51,11 +58,15 @@
 				
 				clientStreamStr = FlexGlobals.topLevelApplication.parameters.clientStreamStr;
 				clientDefaultImage = FlexGlobals.topLevelApplication.parameters.clientDefaultImage;
+				urlPrefix =  FlexGlobals.topLevelApplication.parameters.urlPrefix;
+				serverInfoURL = urlPrefix + serverInfoURL;
 				
 				userDefaultImage.source = clientDefaultImage;
 				
 				flash.external.ExternalInterface.addCallback("setClientStreamStr", setClientStreamStr);
 				flash.external.ExternalInterface.addCallback("setClientDefaultImage", setClientDefaultImage);
+				
+				serverInfoService.send();
 			}
 			
 			protected function userVideo_mediaPlayerStateChangeHandler(event:MediaPlayerStateChangeEvent):void
@@ -77,15 +88,25 @@
 			}
 			
 			
+			private function readServerInfo(event:ResultEvent):void
+			{				
+				var result:Object = JSON.parse(event.result as String);
+				
+				clientStreamURL = "rtmp://" + result.command.hostname + ":" + result.command.rtmpPort + "/live_user";
+			}
 		]]>
 	</fx:Script>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->	
+		<mx:HTTPService id="serverInfoService" url="{serverInfoURL}" useProxy="false" method="GET" result="readServerInfo(event)" showBusyCursor="true">
+			<mx:request xmlns="">
+			</mx:request>
+		</mx:HTTPService>
 	</fx:Declarations>
 	<s:VideoDisplay id="userVideo" x="0" y="0" width="100" height="100" mediaPlayerStateChange="userVideo_mediaPlayerStateChangeHandler(event)">
 		<s:source>
 			<s:DynamicStreamingVideoSource id="videoSource"
-										   host="rtmp://infty123.iptime.org/live_user" streamType="live" >
+										   host="{clientStreamURL}" streamType="live" >
 				<s:DynamicStreamingVideoItem streamName="{clientStreamStr}" />
 			</s:DynamicStreamingVideoSource>
 		</s:source>	
