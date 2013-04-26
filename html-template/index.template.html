@@ -41,6 +41,7 @@
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
             var xiSwfUrlStr = "${expressInstallSwf}";
             var flashvars = {};
+            flashvars.urlPrefix = 'http://localhost:8080/IndiCrowd';
 			flashvars.clientStreamStr = '1';
 			flashvars.clientDefaultImage = 'http://its.kennesaw.edu/images/Keyboard_Help.jpg';
             var params = {};
