@@ -2,7 +2,7 @@
 <mx:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 				xmlns:s="library://ns.adobe.com/flex/spark"
 				xmlns:mx="library://ns.adobe.com/flex/mx"
-				width="100" height="100" minWidth="100" minHeight="100" horizontalAlign="center"
+				width="50" height="50" minWidth="50" minHeight="50" horizontalAlign="center"
 				initialize="init()" layout="absolute">
 	<fx:Script>
 		<![CDATA[
@@ -95,6 +95,7 @@
 				clientStreamURL = "rtmp://" + result.command.hostname + ":" + result.command.rtmpPort + "/live_user";
 				
 				userVideo.source = videoSource;
+				userVideo.play();
 			}
 		]]>
 	</fx:Script>
@@ -105,7 +106,7 @@
 			</mx:request>
 		</mx:HTTPService>
 	</fx:Declarations>
-	<s:VideoDisplay id="userVideo" x="0" y="0" width="100" height="100" autoPlay="true" mediaPlayerStateChange="userVideo_mediaPlayerStateChangeHandler(event)">
+	<s:VideoDisplay id="userVideo" x="0" y="0" width="50" height="50" autoPlay="true" mediaPlayerStateChange="userVideo_mediaPlayerStateChangeHandler(event)">
 		<s:source>
 			<s:DynamicStreamingVideoSource id="videoSource"
 										   host="{clientStreamURL}" streamType="live" >
@@ -113,5 +114,5 @@
 			</s:DynamicStreamingVideoSource>
 		</s:source>	
 	</s:VideoDisplay>
-	<s:Image id="userDefaultImage" x="0" y="0" width="100" height="100"/>
+	<s:Image id="userDefaultImage" x="0" y="0" width="50" height="50"/>
 </mx:Application>
